@@ -1,2 +1,3 @@
-# gockify
-CLI App for Clockify written in GO. Cleverly named Gockify :P
+# Gockify
+CLI App for Clockify written in GO. 
+Cleverly named Gockify :P
