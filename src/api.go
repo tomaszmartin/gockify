@@ -1,27 +1,25 @@
-package glockify
+package gockify
 
 import (
+	"fmt"
 	"net/http"
-	"time"
 )
 
-const BaseURL = "https://api.clockify.me/api/v1"
-const ReportURL = "https://reports.api.clockify.me/v1"
-
-type Client struct {
-	BaseURL    string
-	ReportURL  string
-	apiKey     string
-	HTTPClient *http.Client
+func (c *Client) request(req *http.Request) {
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("X-Api-Key", c.apiKey)
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer resp.Body.Close()
+	c.printResponse(resp)
 }
 
-func NewClient(apiKey string) *Client {
-	return &Client{
-		BaseURL:   BaseURL,
-		ReportURL: ReportURL,
-		apiKey:    apiKey,
-		HTTPClient: &http.Client{
-			Timeout: time.Minute,
-		},
+func (c *Client) GetWorkspaces() {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/workspaces", c.BaseURL), nil)
+	if err != nil {
+		fmt.Println(err)
 	}
+	c.request(req)
 }
