@@ -8,7 +8,6 @@ is in client.go.
 package gockify
 
 import (
-	"encoding/json"
 	"fmt"
 )
 
@@ -30,13 +29,11 @@ func (c *Client) GetTasks(workspaceId string, projectId string) ([]Resource, err
 func (c *Client) CreateProject(workspaceId string, projectName string) ([]Resource, error) {
 	url := fmt.Sprintf("%s/workspaces/%s/projects", c.BaseURL, workspaceId)
 	values := map[string]string{"name": projectName}
-	jsonValue, _ := json.Marshal(values)
-	return c.apiPost(url, jsonValue)
+	return c.apiPost(url, values)
 }
 
 func (c *Client) CreateTask(workspaceId string, projectId string, taskName string) ([]Resource, error) {
 	url := fmt.Sprintf("%s/workspaces/%s/projects/%s/tasks", c.BaseURL, workspaceId, projectId)
 	values := map[string]string{"name": taskName, "projectId": projectId, "status": "ACTIVE"}
-	jsonValue, _ := json.Marshal(values)
-	return c.apiPost(url, jsonValue)
+	return c.apiPost(url, values)
 }

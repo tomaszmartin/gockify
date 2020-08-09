@@ -79,7 +79,11 @@ func (c *Client) apiGet(url string) ([]Resource, error) {
 	return c.getResources(resp)
 }
 
-func (c *Client) apiPost(url string, jsonValue []byte) ([]Resource, error) {
+func (c *Client) apiPost(url string, values map[string]string) ([]Resource, error) {
+	jsonValue, err := json.Marshal(values)
+	if err != nil {
+		log.Fatal("Bad JSON", err)
+	}
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonValue))
 	if err != nil {
 		log.Fatal("Bad request", err)
