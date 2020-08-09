@@ -78,3 +78,13 @@ func (c *Client) apiGet(url string) ([]Resource, error) {
 	defer resp.Body.Close()
 	return c.getResources(resp)
 }
+
+func (c *Client) apiPost(url string, jsonValue []byte) ([]Resource, error) {
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonValue))
+	if err != nil {
+		log.Fatal("Bad request", err)
+	}
+	resp := c.request(req)
+	defer resp.Body.Close()
+	return c.getResources(resp)
+}
