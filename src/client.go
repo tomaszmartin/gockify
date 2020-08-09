@@ -8,7 +8,6 @@ package gockify
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -36,22 +35,12 @@ func NewClient(apiKey string) *Client {
 	}
 }
 
-func (c *Client) printResponse(resp *http.Response) {
-	var prettyJSON bytes.Buffer
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = json.Indent(&prettyJSON, bodyBytes, "", "\t")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(prettyJSON.Bytes())
-}
-
 func (c *Client) getResources(resp *http.Response) ([]Resource, error) {
 	var decoded []Resource
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal("Bad Response", err)
+	}
 	err = json.Unmarshal(bodyBytes, &decoded)
 	if err != nil {
 		log.Fatal("Bad JSON", err)
