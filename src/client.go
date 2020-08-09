@@ -1,3 +1,8 @@
+/*
+Copyright © 2020 Tomasz Martin <tomasz.martin@gmail.com>
+
+Here is the logic of calling the API, erro handling etc.
+*/
 package gockify
 
 import (
@@ -31,7 +36,7 @@ func NewClient(apiKey string) *Client {
 	}
 }
 
-func (c *Client) printJSON(resp *http.Response) {
+func (c *Client) printResponse(resp *http.Response) {
 	var prettyJSON bytes.Buffer
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -44,11 +49,7 @@ func (c *Client) printJSON(resp *http.Response) {
 	fmt.Println(prettyJSON.Bytes())
 }
 
-func (c *Client) getResources(resp *http.Response, err error) ([]Resource, error) {
-	defer resp.Body.Close()
-	if err != nil {
-		log.Fatal("Bad response", err)
-	}
+func (c *Client) getResources(resp *http.Response) ([]Resource, error) {
 	var decoded []Resource
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	err = json.Unmarshal(bodyBytes, &decoded)
@@ -56,4 +57,24 @@ func (c *Client) getResources(resp *http.Response, err error) ([]Resource, error
 		log.Fatal("Bad JSON", err)
 	}
 	return decoded, nil
+}
+
+func (c *Client) request(req *http.Request) *http.Response {
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("X-Api-Key", c.apiKey)
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		log.Fatal("Bad response", err)
+	}
+	return resp
+}
+
+func (c *Client) apiGet(url string) ([]Resource, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Fatal("Bad request", err)
+	}
+	resp := c.request(req)
+	defer resp.Body.Close()
+	return c.getResources(resp)
 }

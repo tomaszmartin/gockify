@@ -1,10 +1,11 @@
+/*
+Copyright © 2020 Tomasz Martin <tomasz.martin@gmail.com>
+
+*/
 package main
 
-import (
-	gockify "github.com/tomaszmartin/gockify/src"
-)
+import "github.com/tomaszmartin/gockify/cmd"
 
 func main() {
-	// For now just pass API key as argument
-	gockify.Init()
+	cmd.Execute()
 }
