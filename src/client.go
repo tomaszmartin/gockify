@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 )
@@ -30,7 +31,7 @@ func NewClient(apiKey string) *Client {
 	}
 }
 
-func (c *Client) printResponse(resp *http.Response) {
+func (c *Client) printJSON(resp *http.Response) {
 	var prettyJSON bytes.Buffer
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -40,5 +41,19 @@ func (c *Client) printResponse(resp *http.Response) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(string(prettyJSON.Bytes()))
+	fmt.Println(prettyJSON.Bytes())
+}
+
+func (c *Client) getResources(resp *http.Response, err error) ([]Resource, error) {
+	defer resp.Body.Close()
+	if err != nil {
+		log.Fatal("Bad response", err)
+	}
+	var decoded []Resource
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal(bodyBytes, &decoded)
+	if err != nil {
+		log.Fatal("Bad JSON", err)
+	}
+	return decoded, nil
 }

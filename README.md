@@ -14,7 +14,7 @@ Initialized. Available workspaces:
     (1) First
     (2) Second
 Choose default workspace: 1
-First workspace set as defualt.
+Workspace [First] set as defualt.
 ```
 
 This app is extremely simple. It allows to start a task by passing project and task.
