@@ -6,8 +6,12 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"strconv"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	gockify "github.com/tomaszmartin/gockify/src"
 )
 
 // initCmd represents the init command
@@ -15,7 +19,36 @@ var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Set up the app variables.",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("init called")
+		err := viper.ReadInConfig()
+		if err != nil {
+			log.Fatal(err)
+		}
+		var apiKey, chosenIndex string
+		fmt.Print("Insert API key: ")
+		fmt.Scanln(&apiKey)
+		client := gockify.NewClient(apiKey)
+		workspaces, err := client.GetWorkspaces()
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("Initialized. Available workspaces:")
+		for index, space := range workspaces {
+			fmt.Printf("\t(%d) %s\n", index, space.Name)
+		}
+		fmt.Print("Choose default workspace: ")
+		fmt.Scanln(&chosenIndex)
+		workspaceIndex, err := strconv.ParseInt(chosenIndex, 10, 64)
+		if err != nil {
+			log.Fatal(err)
+		}
+		chosen := workspaces[workspaceIndex]
+		viper.Set("WorkspaceID", chosen.ID)
+		viper.Set("ApiKey", apiKey)
+		err = viper.WriteConfig()
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Workspace [%s] set as defualt.\n", chosen.Name)
 	},
 }
 
